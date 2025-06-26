@@ -231,7 +231,7 @@ def create_family_dinner_episode():
         lt_memory=[
             "first in family to go to college",
             "struggling with work-life balance",
-            "recently discovered she's pregnant"
+            "recently discovered she's 8 weeks pregnant"
         ]
     )
     
@@ -283,7 +283,7 @@ def create_family_dinner_episode():
     # Add claims
     episode.add_claim("David's business is failing", "fact", True, ["david", "narrator"], 0)
     episode.add_claim("Carmen is pregnant", "fact", True, ["carmen", "narrator"], 0)
-    episode.add_claim("Elena suspects her husband", "belief", True, ["elena"], 0)
+    episode.add_claim("Elena suspects her husband", "belief", True, ["elena", "narrator"], 0)
     episode.add_claim("The family is about to face major changes", "foreshadowing", True, ["narrator"], 0)
     
     return episode
