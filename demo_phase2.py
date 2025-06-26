@@ -470,7 +470,7 @@ if __name__ == "__main__":
         print("Set it with: export OPENAI_API_KEY='your-key-here'\n")
     
     demo_simulation_with_logging()
-    demo_quick_simulate()
+    #demo_quick_simulate()
     
     print("\n🎉 Phase 2 demo completed!")
     print("\nNext steps:")
