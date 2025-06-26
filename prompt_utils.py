@@ -11,7 +11,7 @@ def call_openai(
     system_prompt: str,
     user_prompt: str,
     model: str = "gpt-4o-mini",
-    temperature: float = 0.9,
+    temperature: float = 1.0,
     max_tokens: int = 1000,
     expect_json: bool = True
 ) -> Dict[str, Any]:
@@ -119,8 +119,7 @@ RULES:
    a. dialogue: what you say aloud
    b. actions: what you physically do
 2. Optionally output self_updates to revise your own state (beliefs, goals, emotion, location, plans).
-3. Do NOT reveal information you don't perceive or know.
-4. Stay true to your character traits and current emotional state.
+3. Stay true to your character traits and current emotional state.
 
 Return valid JSON in this format:
 {{

@@ -214,7 +214,7 @@ class EpisodeSimulator:
             world_context = self.author.get_character_perception(episode, speaker_id)
             
             # Get recent dialogue for context
-            recent_dialogue = self._get_recent_dialogue(episode, last_n_turns=3)
+            recent_dialogue = self._get_recent_dialogue(episode, last_n_turns=10)
             
             # Character acts
             speaker_agent = agents[speaker_id]

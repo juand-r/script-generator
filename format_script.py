@@ -6,6 +6,7 @@ Usage: python format_script.py episode_file.json
 
 import json
 import sys
+import argparse
 from pathlib import Path
 
 
@@ -111,37 +112,86 @@ def format_script_with_state_changes(json_file_path):
     return "\n".join(lines)
 
 
+def format_dialogue_only(json_file_path):
+    """Convert episode JSON to dialogue-only format"""
+    
+    with open(json_file_path, 'r') as f:
+        episode_data = json.load(f)
+    
+    lines = []
+    
+    # Add header
+    lines.append(f"=== {episode_data['title']} ===")
+    lines.append(f"Genre: {episode_data['genre']}")
+    lines.append(f"Scene: {episode_data['world_state']['scene']}")
+    lines.append("")
+    
+    # Process turns - dialogue only
+    for turn in episode_data['turns']:
+        speaker = turn['speaker'].upper()
+        dialogue = turn.get('dialogue', '')
+        
+        if dialogue:  # Only show turns with actual dialogue
+            lines.append(f"{speaker}: {dialogue}")
+    
+    return "\n".join(lines)
+
+
 def main():
     """Main function"""
-    if len(sys.argv) != 2:
-        print("Usage: python format_script.py episode_file.json")
-        print("\nExample:")
-        print("  python format_script.py episode_family_001_20241201_143022.json")
-        sys.exit(1)
+    parser = argparse.ArgumentParser(description='Convert episode JSON files to readable script format')
+    parser.add_argument('json_file', help='Episode JSON file to convert')
+    parser.add_argument('--dialogue-only', '-d', action='store_true', 
+                       help='Output only dialogue without actions or state changes')
+    parser.add_argument('--output', '-o', help='Output file name (optional)')
     
-    json_file = sys.argv[1]
+    args = parser.parse_args()
     
-    if not Path(json_file).exists():
-        print(f"Error: File '{json_file}' not found")
+    if not Path(args.json_file).exists():
+        print(f"Error: File '{args.json_file}' not found")
         sys.exit(1)
     
     try:
-        # Generate both formats
-        print("=== SIMPLE SCRIPT FORMAT ===")
-        print(format_script_from_json(json_file))
-        
-        print("\n\n=== SCRIPT WITH STATE CHANGES ===")
-        print(format_script_with_state_changes(json_file))
-        
-        # Save to file
-        output_file = json_file.replace('.json', '_script.txt')
-        with open(output_file, 'w') as f:
-            f.write("=== SIMPLE SCRIPT FORMAT ===\n")
-            f.write(format_script_from_json(json_file))
-            f.write("\n\n=== SCRIPT WITH STATE CHANGES ===\n")
-            f.write(format_script_with_state_changes(json_file))
-        
-        print(f"\n💾 Script saved to: {output_file}")
+        if args.dialogue_only:
+            # Generate dialogue-only format
+            print("=== DIALOGUE ONLY ===")
+            dialogue_script = format_dialogue_only(args.json_file)
+            print(dialogue_script)
+            
+            # Save to file
+            if args.output:
+                output_file = args.output
+            else:
+                output_file = args.json_file.replace('.json', '_dialogue_only.txt')
+            
+            with open(output_file, 'w') as f:
+                f.write(dialogue_script)
+            
+            print(f"\n💾 Dialogue-only script saved to: {output_file}")
+            
+        else:
+            # Generate both formats (original behavior)
+            print("=== SIMPLE SCRIPT FORMAT ===")
+            simple_script = format_script_from_json(args.json_file)
+            print(simple_script)
+            
+            print("\n\n=== SCRIPT WITH STATE CHANGES ===")
+            detailed_script = format_script_with_state_changes(args.json_file)
+            print(detailed_script)
+            
+            # Save to file
+            if args.output:
+                output_file = args.output
+            else:
+                output_file = args.json_file.replace('.json', '_script.txt')
+            
+            with open(output_file, 'w') as f:
+                f.write("=== SIMPLE SCRIPT FORMAT ===\n")
+                f.write(simple_script)
+                f.write("\n\n=== SCRIPT WITH STATE CHANGES ===\n")
+                f.write(detailed_script)
+            
+            print(f"\n💾 Script saved to: {output_file}")
         
     except Exception as e:
         print(f"Error processing file: {e}")
@@ -149,4 +199,15 @@ def main():
 
 
 if __name__ == "__main__":
+    # Show usage example if no arguments provided
+    if len(sys.argv) == 1:
+        print("Usage examples:")
+        print("  python format_script.py episode_file.json")
+        print("  python format_script.py episode_file.json --dialogue-only")
+        print("  python format_script.py episode_file.json -d -o dialogue.txt")
+        print("\nOptions:")
+        print("  -d, --dialogue-only    Output only dialogue without actions")
+        print("  -o, --output FILE      Specify output filename")
+        sys.exit(1)
+    
     main() 
